@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>echo-JK</title>
+		<style type="text/css">
+			*{
+				margin: 0;padding: 0;
+			}
+			#outer{
+				width: 400px;height: 500px;
+				margin: 50px auto;
+				background-color: #0ff;	
+			}
+			#inp{
+				width: 350px;height: 40px;
+				outline: none;
+				box-sizing: border-box;
+				font-size: 18px;
+			}
+			#btn{
+				width: 50px;
+				outline: none;
+				text-align: center;
+				line-height: 40px;
+				font-size: 18px;
+			}
+			#wordsBox{
+				height: 460px;
+				overflow-y: auto;
+			}
+			#wordsBox div{
+				line-height: 30px;
+				margin-bottom: 5px;
+			}
+			.myWords{
+				text-align: right;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="outer">
+			<input type="text" id="inp" /><button id="btn">提交</button>
+			<div id="wordsBox"></div>
+			<script type="text/javascript">
+				var inp = document.getElementById('inp');
+				var btn = document.getElementById('btn');
+				var wordsBox = document.getElementById('wordsBox');
+				//点击提交按钮发送问答请求
+				btn.onclick = function(){
+					chat();
+				}
+				document.onkeydown = function(e){
+					var e = e || window.event;
+					if(e.keyCode == 13){
+						chat();
+					}
+				}
+				function chat(){
+					//创建我的绘画气泡
+					var myWords = document.createElement('div');
+					myWords.innerHTML = inp.value;
+					myWords.setAttribute('class','myWords');
+					if (wordsBox.children.length != 0) {
+						// 如果ul中有子元素，新的li应该插入到第一个子元素前面
+						wordsBox.insertBefore(myWords,wordsBox.firstElementChild);
+					}else{
+						wordsBox.appendChild(myWords);
+					}
+					//买一个电话
+					if(window.XMLHttpRequest){
+						var xhr = new XMLHttpRequest();
+					}else{
+						var xhr = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					var url = 'http://www.tuling123.com/openapi/api';
+					xhr.open('POST',url,true);
+					xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+					xhr.send('key=8b3c5e11ec264455a195b44cc28559ae&info='+ inp.value +'&uesrid=1')
+					//等待响应
+					xhr.onreadystatechange = function(){
+						//接收回复
+						if(xhr.readyState == 4 && xhr.status == 200){
+							var str = xhr.responseText;
+							console.log(str);
+							//创建一个机器人绘画气泡
+							var echoWords = document.createElement('div');
+							echoWords.innerHTML = JSON.parse(str).text;
+							if (wordsBox.children.length != 0) {
+								// 如果ul中有子元素，新的li应该插入到第一个子元素前面
+								wordsBox.insertBefore(echoWords,wordsBox.firstElementChild);
+							}else{
+								wordsBox.appendChild(echoWords);
+							}
+							inp.value = " ";
+						}
+					}
+				}
+			</script>
+		</div>
+	</body>
+</html>
